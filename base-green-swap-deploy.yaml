@@ -1,0 +1,36 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nginx-deployment-$TYPE
+spec:
+  replicas: 1
+  selector:
+      matchLabels:
+        app: nginx
+        type: $TYPE
+  template:
+    metadata:
+      labels:
+        app: nginx
+        type: $TYPE
+    spec:
+      volumes:
+        - name: data-volume
+          persistentVolumeClaim:
+            claimName: nginx-pvc
+      containers: 
+        - name: nginx
+          image: bluegreendocitu.azurecr.io/nginx:$IMAGE_TAG
+          ports:
+            - name: http
+              containerPort: 80
+          resources:
+            requests:
+              cpu: 100m
+              memory: 100Mi
+            limits:
+              cpu: 250m
+              memory: 250Mi
+          volumeMounts:
+            - name: data-volume
+              mountPath: /data
